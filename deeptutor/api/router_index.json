@@ -1,5 +1,5 @@
 {
-  "fingerprint": "cf1f0c2fbdd6c054d0221dee1f82177a5e3e857533b60e243107cda3bfcb1f7c",
+  "fingerprint": "e7bd78619aad2ac928c4ee7e3d9c412c27dbc5e32e1e352de0b498d0b4e41347",
   "routers": {
     "deeptutor.api.routers.auth:router": [
       {
@@ -513,6 +513,22 @@
       {
         "path": "/groups/{group_id}/members/{username}/grants",
         "name": "get_group_member_grants",
+        "kind": "http",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "path": "/groups/{group_id}/remind",
+        "name": "remind_group_members",
+        "kind": "http",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "path": "/groups/{group_id}/weekly",
+        "name": "group_weekly_report",
         "kind": "http",
         "methods": [
           "GET"

@@ -5051,6 +5051,31 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/multi-user/groups/{group_id}/remind": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Remind Group Members
+     * @description Log a nudge against each selected member.
+     *
+     *     The platform has no user-facing notification channel, so this is a ledger
+     *     plus a message the lead copies into whatever chat they actually use. Recording
+     *     it is still the point: "did anybody chase this person, and when" is the
+     *     question a lead is asked at the end of the week.
+     */
+    readonly post: operations["remind_group_members_api_multi_user_groups__group_id__remind_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/multi-user/groups/{group_id}/report": {
     readonly parameters: {
       readonly query?: never;
@@ -5067,6 +5092,26 @@ export interface paths {
      *     people are willing to think out loud.
      */
     readonly get: operations["group_report_api_multi_user_groups__group_id__report_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/multi-user/groups/{group_id}/weekly": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Group Weekly Report
+     * @description Token usage per member over the last ``days`` days.
+     */
+    readonly get: operations["group_weekly_report_api_multi_user_groups__group_id__weekly_get"];
     readonly put?: never;
     readonly post?: never;
     readonly delete?: never;
@@ -14436,6 +14481,16 @@ export interface components {
       /** Name */
       readonly name: string;
     };
+    /** GroupRemindPayload */
+    readonly GroupRemindPayload: {
+      /**
+       * Note
+       * @default
+       */
+      readonly note: string;
+      /** Usernames */
+      readonly usernames?: readonly string[];
+    };
     /** GuardianAuthorizationPayload */
     readonly GuardianAuthorizationPayload: {
       /** Guardian User Id */
@@ -19220,6 +19275,8 @@ export type SchemaGroupMemberGrantPayload =
 export type SchemaGroupMembersPayload =
   components["schemas"]["GroupMembersPayload"];
 export type SchemaGroupPayload = components["schemas"]["GroupPayload"];
+export type SchemaGroupRemindPayload =
+  components["schemas"]["GroupRemindPayload"];
 export type SchemaGuardianAuthorizationPayload =
   components["schemas"]["GuardianAuthorizationPayload"];
 export type SchemaGuardianCredentialResetPayload =
@@ -30388,9 +30445,89 @@ export interface operations {
       };
     };
   };
+  readonly remind_group_members_api_multi_user_groups__group_id__remind_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly group_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["GroupRemindPayload"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly group_report_api_multi_user_groups__group_id__report_get: {
     readonly parameters: {
       readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly group_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly group_weekly_report_api_multi_user_groups__group_id__weekly_get: {
+    readonly parameters: {
+      readonly query?: {
+        readonly days?: number;
+      };
       readonly header?: {
         readonly Authorization?: string | null;
       };

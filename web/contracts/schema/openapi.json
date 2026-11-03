@@ -5470,6 +5470,25 @@
         "title": "GroupPayload",
         "type": "object"
       },
+      "GroupRemindPayload": {
+        "properties": {
+          "note": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Note",
+            "type": "string"
+          },
+          "usernames": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Usernames",
+            "type": "array"
+          }
+        },
+        "title": "GroupRemindPayload",
+        "type": "object"
+      },
       "GuardianAuthorizationPayload": {
         "properties": {
           "guardian_user_id": {
@@ -37895,6 +37914,93 @@
         ]
       }
     },
+    "/api/multi-user/groups/{group_id}/remind": {
+      "post": {
+        "description": "Log a nudge against each selected member.\n\nThe platform has no user-facing notification channel, so this is a ledger\nplus a message the lead copies into whatever chat they actually use. Recording\nit is still the point: \"did anybody chase this person, and when\" is the\nquestion a lead is asked at the end of the week.",
+        "operationId": "remind_group_members_api_multi_user_groups__group_id__remind_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupRemindPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Remind Group Members Api Multi User Groups  Group Id  Remind Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remind Group Members",
+        "tags": [
+          "multi-user"
+        ]
+      }
+    },
     "/api/multi-user/groups/{group_id}/report": {
       "get": {
         "description": "Per-member account and grant status.\n\nDeliberately excludes conversation content: a lead needs to see who is\nblocked, not what anybody said, or the workspace stops being somewhere\npeople are willing to think out loud.",
@@ -37967,6 +38073,93 @@
           }
         },
         "summary": "Group Report",
+        "tags": [
+          "multi-user"
+        ]
+      }
+    },
+    "/api/multi-user/groups/{group_id}/weekly": {
+      "get": {
+        "description": "Token usage per member over the last ``days`` days.",
+        "operationId": "group_weekly_report_api_multi_user_groups__group_id__weekly_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "group_id",
+            "required": true,
+            "schema": {
+              "title": "Group Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 7,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Group Weekly Report Api Multi User Groups  Group Id  Weekly Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Group Weekly Report",
         "tags": [
           "multi-user"
         ]

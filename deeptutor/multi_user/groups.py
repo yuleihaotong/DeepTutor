@@ -255,12 +255,138 @@ def delete_group(group_id: str) -> bool:
 
 __all__ = [
     "GROUPS_FILE",
+    "REMINDERS_FILE",
     "add_member",
     "create_group",
     "delete_group",
     "get_group",
     "groups_led_by",
+    "last_reminders",
     "list_groups",
+    "member_learning",
+    "member_usage",
+    "record_reminders",
     "remove_member",
     "set_group_members",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Supervision: what a lead can see, and the one action they take on it
+# ---------------------------------------------------------------------------
+
+REMINDERS_FILE = SYSTEM_ROOT / "group_reminders.jsonl"
+
+
+def member_learning(user_id: str) -> dict[str, Any] | None:
+    """Mastery overview for one member, read inside that member's own scope.
+
+    ``None`` when the account cannot be read at all — the report distinguishes
+    "no learning yet" (zeros) from "could not look" instead of printing a lie.
+    """
+    from deeptutor.learning.service import LearningService
+    from deeptutor.learning.storage import LearningStore
+    from deeptutor.multi_user.models import CurrentUser
+    from deeptutor.multi_user.paths import scope_for_user, user_context
+    from deeptutor.services.workspace.context import workspace_context
+
+    try:
+        scope = scope_for_user(user_id, is_admin=False)
+        user = CurrentUser(id=user_id, username="", role="user", scope=scope)
+        with user_context(user), workspace_context(""):
+            payload = LearningService(LearningStore()).list_progress()
+    except Exception:
+        return None
+    summaries = [row for row in payload.get("summaries") or [] if isinstance(row, dict)]
+    knowledge_points = sum(int(row.get("kp_count") or 0) for row in summaries)
+    weighted = sum(
+        int(row.get("avg_mastery_pct") or 0) * int(row.get("kp_count") or 0) for row in summaries
+    )
+    return {
+        "paths": len(summaries),
+        "knowledge_points": knowledge_points,
+        "mastery_pct": round(weighted / knowledge_points) if knowledge_points else 0,
+    }
+
+
+async def member_usage(user_id: str, start_at: float) -> dict[str, Any]:
+    """Token usage for one member since ``start_at``, summed in their scope."""
+    import time as _time
+
+    from deeptutor.multi_user.models import CurrentUser
+    from deeptutor.multi_user.paths import scope_for_user, user_context
+    from deeptutor.services.session import get_session_store
+    from deeptutor.services.workspace.context import workspace_context
+
+    try:
+        scope = scope_for_user(user_id, is_admin=False)
+        user = CurrentUser(id=user_id, username="", role="user", scope=scope)
+        with user_context(user), workspace_context(""):
+            records = await get_session_store().usage_records(start_at, _time.time())
+    except Exception:
+        return {"total_tokens": 0, "calls": 0}
+
+    total_tokens = 0
+    calls = 0
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        total_tokens += int(record.get("total_tokens") or 0)
+        calls += 1
+    return {"total_tokens": total_tokens, "calls": calls}
+
+
+def record_reminders(
+    group_id: str,
+    member_user_ids: Iterable[Any],
+    *,
+    actor_user_id: str,
+    note: str = "",
+) -> int:
+    """Append one reminder per member to the ledger. Returns how many were written."""
+    targets = [str(user_id or "").strip() for user_id in member_user_ids or []]
+    targets = [user_id for user_id in targets if user_id]
+    if not targets:
+        return 0
+    stamp = _utc_now()
+    written = 0
+    with _GROUPS_WRITE_LOCK:
+        REMINDERS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with REMINDERS_FILE.open("a", encoding="utf-8") as handle:
+            for user_id in targets:
+                handle.write(
+                    json.dumps(
+                        {
+                            "time": stamp,
+                            "group_id": group_id,
+                            "member_user_id": user_id,
+                            "actor_user_id": str(actor_user_id or ""),
+                            "note": str(note or "")[:200],
+                        },
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
+                written += 1
+    return written
+
+
+def last_reminders(group_id: str) -> dict[str, str]:
+    """Newest reminder timestamp per member for one group."""
+    latest: dict[str, str] = {}
+    try:
+        lines = REMINDERS_FILE.read_text(encoding="utf-8").splitlines()
+    except Exception:
+        return latest
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except Exception:
+            continue
+        if not isinstance(row, dict) or str(row.get("group_id") or "") != group_id:
+            continue
+        member = str(row.get("member_user_id") or "")
+        stamp = str(row.get("time") or "")
+        if member and stamp and stamp > latest.get(member, ""):
+            latest[member] = stamp
+    return latest

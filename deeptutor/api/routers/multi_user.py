@@ -41,7 +41,11 @@ from deeptutor.multi_user.groups import (
     delete_group,
     get_group,
     groups_led_by,
+    last_reminders,
     list_groups,
+    member_learning,
+    member_usage,
+    record_reminders,
     remove_member,
     set_group_members,
 )
@@ -1153,6 +1157,7 @@ async def group_report(group_id: str, current: object = Depends(require_auth)) -
     """
     group, is_admin = _require_group_access(current, group_id)
     users = _users_by_id()
+    reminders = last_reminders(group_id)
     entries: list[dict[str, Any]] = []
     for user_id in [group["lead_user_id"], *group["member_user_ids"]]:
         account = users.get(user_id)
@@ -1168,6 +1173,8 @@ async def group_report(group_id: str, current: object = Depends(require_auth)) -
                 "disabled": bool(account.get("disabled", False)),
                 "must_change_password": bool(account.get("must_change_password", False)),
                 "last_active_at": _last_active_at(user_id),
+                "last_reminded_at": reminders.get(user_id),
+                "learning": member_learning(user_id),
                 "grant_summary": {
                     "model_count": len(grant.get("models", {}).get("llm", []) or []),
                     "knowledge_base_count": len(grant.get("knowledge_bases") or []),
@@ -1480,4 +1487,76 @@ async def get_group_member_grants(
         "models": [dict(item) for item in (grant.get("models") or {}).get("llm") or []],
         "knowledge_bases": [dict(item) for item in grant.get("knowledge_bases") or []],
         "skills": [dict(item) for item in grant.get("skills") or []],
+    }
+
+
+class GroupRemindPayload(BaseModel):
+    usernames: list[str] = Field(default_factory=list)
+    note: str = Field(default="", max_length=200)
+
+
+@router.post("/groups/{group_id}/remind")
+async def remind_group_members(
+    group_id: str,
+    payload: GroupRemindPayload,
+    current: object = Depends(require_auth),
+) -> dict[str, Any]:
+    """Log a nudge against each selected member.
+
+    The platform has no user-facing notification channel, so this is a ledger
+    plus a message the lead copies into whatever chat they actually use. Recording
+    it is still the point: "did anybody chase this person, and when" is the
+    question a lead is asked at the end of the week.
+    """
+    group, is_admin = _require_group_access(current, group_id)
+    users = _users_by_id()
+    targets: list[str] = []
+    for username in payload.usernames:
+        member_user_id = _member_in_group(group, username, users)
+        if member_user_id is None:
+            raise HTTPException(status_code=403, detail="Account is not a member of this group")
+        targets.append(member_user_id)
+    if not targets:
+        raise HTTPException(status_code=400, detail="No member selected")
+    actor_user_id = str(getattr(current, "user_id", "") or "")
+    written = record_reminders(group_id, targets, actor_user_id=actor_user_id, note=payload.note)
+    _log_group_action("group_remind", group_id, is_admin=is_admin, summary={"count": written})
+    return {"reminded": written, "at": last_reminders(group_id).get(targets[0])}
+
+
+@router.get("/groups/{group_id}/weekly")
+async def group_weekly_report(
+    group_id: str,
+    days: int = 7,
+    current: object = Depends(require_auth),
+) -> dict[str, Any]:
+    """Token usage per member over the last ``days`` days."""
+    import time as _time
+
+    group, is_admin = _require_group_access(current, group_id)
+    window = max(1, min(int(days or 7), 90))
+    start_at = _time.time() - window * 86400
+    users = _users_by_id()
+    rows: list[dict[str, Any]] = []
+    total_tokens = 0
+    for user_id in [group["lead_user_id"], *group["member_user_ids"]]:
+        account = users.get(user_id)
+        if account is None:
+            continue
+        usage = await member_usage(user_id, start_at)
+        total_tokens += int(usage["total_tokens"])
+        rows.append(
+            {
+                "user_id": user_id,
+                "username": str(account.get("username") or ""),
+                "total_tokens": int(usage["total_tokens"]),
+                "calls": int(usage["calls"]),
+            }
+        )
+    _log_group_action("group_weekly_view", group_id, is_admin=is_admin, summary={"days": window})
+    return {
+        "group": _group_view(group, users),
+        "days": window,
+        "members": rows,
+        "total_tokens": total_tokens,
     }

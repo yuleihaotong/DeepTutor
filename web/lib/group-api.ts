@@ -30,6 +30,13 @@ export interface Group {
   members: GroupAccount[];
 }
 
+/** Mastery overview read inside the member's own scope. */
+export interface MemberLearning {
+  paths: number;
+  knowledge_points: number;
+  mastery_pct: number;
+}
+
 export interface GroupReportEntry {
   user_id: string;
   username: string;
@@ -38,11 +45,37 @@ export interface GroupReportEntry {
   disabled: boolean;
   must_change_password: boolean;
   last_active_at: string | null;
+  /** Null when the member's scope could not be read, zeros when nothing is started. */
+  learning: MemberLearning | null;
+  last_reminded_at: string | null;
   grant_summary: {
     model_count: number;
     knowledge_base_count: number;
     skill_count: number;
   };
+}
+
+export interface WeeklyUsageRow {
+  user_id: string;
+  username: string;
+  total_tokens: number;
+  calls: number;
+}
+
+export interface GroupWeeklyReport {
+  group: Group;
+  days: number;
+  members: WeeklyUsageRow[];
+  total_tokens: number;
+}
+
+/** Shape of `GET /api/multi-user/users`; the lead picker only needs these. */
+export interface AdminUserSummary {
+  id: string;
+  username: string;
+  role: string;
+  preset?: string;
+  disabled?: boolean;
 }
 
 export interface GrantableModel {
@@ -120,6 +153,30 @@ export async function getGroup(groupId: string): Promise<Group> {
   return data.group;
 }
 
+export async function createGroup(input: {
+  name: string;
+  lead_user_id: string;
+  member_user_ids?: string[];
+}): Promise<Group> {
+  const data = await request<{ group: Group }>("/api/multi-user/groups", jsonInit("POST", input));
+  return data.group;
+}
+
+export async function deleteGroup(groupId: string): Promise<void> {
+  await request(`/api/multi-user/groups/${encodeURIComponent(groupId)}`, { method: "DELETE" });
+}
+
+export async function setGroupMembers(
+  groupId: string,
+  memberUserIds: string[],
+): Promise<Group> {
+  const data = await request<{ group: Group }>(
+    `/api/multi-user/groups/${encodeURIComponent(groupId)}/members`,
+    jsonInit("PUT", { member_user_ids: memberUserIds }),
+  );
+  return data.group;
+}
+
 export async function createGroupMember(
   groupId: string,
   username: string,
@@ -189,4 +246,30 @@ export async function getGroupReport(
   return request<{ group: Group; members: GroupReportEntry[] }>(
     `/api/multi-user/groups/${encodeURIComponent(groupId)}/report`,
   );
+}
+
+export async function remindMembers(
+  groupId: string,
+  usernames: string[],
+  note = "",
+): Promise<{ reminded: number; at: string | null }> {
+  return request<{ reminded: number; at: string | null }>(
+    `/api/multi-user/groups/${encodeURIComponent(groupId)}/remind`,
+    jsonInit("POST", { usernames, note }),
+  );
+}
+
+export async function getWeeklyReport(
+  groupId: string,
+  days = 7,
+): Promise<GroupWeeklyReport> {
+  return request<GroupWeeklyReport>(
+    `/api/multi-user/groups/${encodeURIComponent(groupId)}/weekly?days=${days}`,
+  );
+}
+
+/** Admin-only; used to populate the lead picker. */
+export async function listAdminUsers(): Promise<AdminUserSummary[]> {
+  const data = await request<{ users: AdminUserSummary[] }>("/api/multi-user/users");
+  return data.users;
 }

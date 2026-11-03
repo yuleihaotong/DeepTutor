@@ -266,6 +266,8 @@ def test_report_carries_status_but_no_conversation_content(mu_isolated_root, mon
             "must_change_password",
             "grant_summary",
             "last_active_at",
+            "last_reminded_at",
+            "learning",
         }, "status only — never conversation content"
 
 
@@ -316,3 +318,74 @@ def test_lead_reads_a_member_grant_before_editing_it(mu_isolated_root, monkeypat
         headers=_auth("outsider-token"),
     )
     assert outsider.status_code == 403
+
+
+def test_lead_reminds_members_and_the_report_remembers(mu_isolated_root, monkeypatch):
+    client, users = _client(mu_isolated_root, monkeypatch)
+    group_id = _group_with(client, users, members=(users["member"]["id"],))
+
+    reminded = client.post(
+        f"/api/multi-user/groups/{group_id}/remind",
+        headers=_auth("lead-token"),
+        json={"usernames": ["member"], "note": "please catch up"},
+    )
+    assert reminded.status_code == 200
+    assert reminded.json()["reminded"] == 1
+    assert reminded.json()["at"]
+
+    body = client.get(
+        f"/api/multi-user/groups/{group_id}/report", headers=_auth("lead-token")
+    ).json()
+    entry = next(row for row in body["members"] if row["username"] == "member")
+    assert entry["last_reminded_at"], "the ledger must show up in the report"
+
+
+def test_outsider_cannot_remind_the_group(mu_isolated_root, monkeypatch):
+    client, users = _client(mu_isolated_root, monkeypatch)
+    group_id = _group_with(client, users, members=(users["member"]["id"],))
+
+    response = client.post(
+        f"/api/multi-user/groups/{group_id}/remind",
+        headers=_auth("outsider-token"),
+        json={"usernames": ["member"]},
+    )
+    assert response.status_code == 403
+
+    unknown = client.post(
+        f"/api/multi-user/groups/{group_id}/remind",
+        headers=_auth("lead-token"),
+        json={"usernames": ["outsider"]},
+    )
+    assert unknown.status_code == 403, "a lead must not chase people outside their roster"
+
+
+def test_weekly_report_lists_every_member(mu_isolated_root, monkeypatch):
+    client, users = _client(mu_isolated_root, monkeypatch)
+    group_id = _group_with(client, users, members=(users["member"]["id"],))
+
+    body = client.get(
+        f"/api/multi-user/groups/{group_id}/weekly?days=7", headers=_auth("lead-token")
+    ).json()
+
+    assert body["days"] == 7
+    assert {row["username"] for row in body["members"]} == {"lead", "member"}
+    for row in body["members"]:
+        assert set(row) == {"user_id", "username", "total_tokens", "calls"}
+    assert body["total_tokens"] == sum(row["total_tokens"] for row in body["members"])
+
+
+def test_report_carries_learning_for_each_member(mu_isolated_root, monkeypatch):
+    client, users = _client(mu_isolated_root, monkeypatch)
+    group_id = _group_with(client, users, members=(users["member"]["id"],))
+
+    body = client.get(
+        f"/api/multi-user/groups/{group_id}/report", headers=_auth("lead-token")
+    ).json()
+
+    for entry in body["members"]:
+        # A member with no learning yet reads as zeros, not as a missing field.
+        assert entry["learning"] is None or set(entry["learning"]) == {
+            "paths",
+            "knowledge_points",
+            "mastery_pct",
+        }
