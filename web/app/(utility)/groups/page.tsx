@@ -19,6 +19,7 @@ import {
   removeGroupMember,
   resetGroupMemberPassword,
   setGroupMemberGrants,
+  setGroupMembers,
   type AdminUserSummary,
   type GrantableResources,
   type Group,
@@ -86,6 +87,7 @@ export default function GroupsPage() {
   const [draftLead, setDraftLead] = useState("");
   const [draftMembers, setDraftMembers] = useState<string[]>([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [memberDraft, setMemberDraft] = useState<string[] | null>(null);
 
   const loadGroup = useCallback(async (groupId: string) => {
     const [body, catalog, week] = await Promise.all([
@@ -320,6 +322,68 @@ export default function GroupsPage() {
       setError(messageOf(err));
     }
   }, [inactiveMembers, t]);
+
+  const saveMembers = useCallback(async () => {
+    if (!group || memberDraft === null) return;
+    setBusy("members");
+    setError("");
+    setNotice("");
+    try {
+      await setGroupMembers(group.id, memberDraft);
+      setMemberDraft(null);
+      await loadGroup(group.id);
+      setNotice(t("Members updated."));
+    } catch (err) {
+      setError(messageOf(err));
+    } finally {
+      setBusy("");
+    }
+  }, [group, loadGroup, memberDraft, t]);
+
+  const exportCsv = useCallback(() => {
+    if (!weekly) return;
+    const header = [t("Username"), t("Tokens"), t("Calls")];
+    const rows = weekly.members.map((row) => [
+      row.username,
+      String(row.total_tokens),
+      String(row.calls),
+    ]);
+    const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    const csv =
+      "\uFEFF" +
+      [header, ...rows]
+        .map((columns) => columns.map(escape).join(","))
+        .join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${group?.name ?? "group"}-weekly-${weekly.days}d.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [group, t, weekly]);
+
+  const copyMarkdown = useCallback(async () => {
+    if (!weekly) return;
+    const lines = [
+      `### ${group?.name ?? ""} · ${t("Last {{days}} days", { days: weekly.days })}`,
+      "",
+      `| ${t("Username")} | ${t("Tokens")} | ${t("Calls")} |`,
+      "| --- | --- | --- |",
+      ...weekly.members.map(
+        (row) => `| ${row.username} | ${row.total_tokens} | ${row.calls} |`,
+      ),
+      "",
+      `**${t("Total")}**: ${weekly.total_tokens}`,
+    ];
+    try {
+      await copyText(lines.join("\n"));
+      setNotice(t("Copied."));
+    } catch (err) {
+      setError(messageOf(err));
+    }
+  }, [group, t, weekly]);
 
   const submitGroup = useCallback(async () => {
     setBusy("create");
@@ -658,12 +722,96 @@ export default function GroupsPage() {
               </p>
             </div>
 
+            {isAdmin && (
+              <div className={cardClass}>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-sm font-medium text-[var(--foreground)]">
+                    {t("Manage members")}
+                  </h2>
+                  {memberDraft === null ? (
+                    <button
+                      type="button"
+                      className={buttonClass}
+                      onClick={() =>
+                        setMemberDraft(
+                          group.member_user_ids.filter(
+                            (id) => id !== group.lead_user_id,
+                          ),
+                        )
+                      }
+                    >
+                      {t("Edit roster")}
+                    </button>
+                  ) : (
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        className={primaryButtonClass}
+                        disabled={busy === "members"}
+                        onClick={() => void saveMembers()}
+                      >
+                        {t("Save members")}
+                      </button>
+                      <button
+                        type="button"
+                        className={buttonClass}
+                        onClick={() => setMemberDraft(null)}
+                      >
+                        {t("Cancel")}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {memberDraft === null ? (
+                  <p className="mt-3 text-xs text-[var(--muted-foreground)]">
+                    {t("Only an admin can add an existing account to a group.")}
+                  </p>
+                ) : (
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    {adminUsers
+                      .filter((user) => user.id !== group.lead_user_id)
+                      .map((user) => (
+                        <label
+                          key={user.id}
+                          className="flex items-center gap-1.5 text-xs text-[var(--foreground)]"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={memberDraft.includes(user.id)}
+                            onChange={() =>
+                              setMemberDraft((previous) =>
+                                previous === null
+                                  ? previous
+                                  : previous.includes(user.id)
+                                    ? previous.filter((id) => id !== user.id)
+                                    : [...previous, user.id],
+                              )
+                            }
+                          />
+                          {user.username}
+                        </label>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {weekly && (
               <div className={cardClass}>
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-medium text-[var(--foreground)]">
                     {t("Weekly usage")} · {t("Last {{days}} days", { days: weekly.days })}
                   </h2>
+                  <button
+                    type="button"
+                    className={buttonClass}
+                    onClick={() => void copyMarkdown()}
+                  >
+                    {t("Copy as Markdown")}
+                  </button>
+                  <button type="button" className={buttonClass} onClick={() => exportCsv()}>
+                    {t("Export CSV")}
+                  </button>
                   <button
                     type="button"
                     className={buttonClass}

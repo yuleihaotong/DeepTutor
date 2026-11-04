@@ -6465,5 +6465,13 @@
   "Last {{days}} days": "Останні {{days}} днів",
   "Tokens": "Токени",
   "Calls": "Виклики",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, цього тижня ми не бачили активності — приділи кілька хвилин, щоб продовжити."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, цього тижня ми не бачили активності — приділи кілька хвилин, щоб продовжити.",
+  "Manage members": "Керувати учасниками",
+  "Edit roster": "Редагувати список",
+  "Save members": "Зберегти учасників",
+  "Members updated.": "Учасників оновлено.",
+  "Only an admin can add an existing account to a group.": "Лише адміністратор може додати наявний обліковий запис до групи.",
+  "Copy as Markdown": "Копіювати як Markdown",
+  "Export CSV": "Експортувати CSV",
+  "Copied.": "Скопійовано."
 }

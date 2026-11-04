@@ -6443,5 +6443,13 @@
   "Last {{days}} days": "Last {{days}} days",
   "Tokens": "Tokens",
   "Calls": "Calls",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, we have not seen activity from you this week — please take a few minutes to continue."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.",
+  "Manage members": "Manage members",
+  "Edit roster": "Edit roster",
+  "Save members": "Save members",
+  "Members updated.": "Members updated.",
+  "Only an admin can add an existing account to a group.": "Only an admin can add an existing account to a group.",
+  "Copy as Markdown": "Copy as Markdown",
+  "Export CSV": "Export CSV",
+  "Copied.": "Copied."
 }

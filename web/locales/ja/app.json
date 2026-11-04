@@ -6443,5 +6443,13 @@
   "Last {{days}} days": "直近 {{days}} 日",
   "Tokens": "トークン",
   "Calls": "呼び出し",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}} さん、今週は学習記録が見えていません。数分だけでも続けてみませんか。"
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}} さん、今週は学習記録が見えていません。数分だけでも続けてみませんか。",
+  "Manage members": "メンバーを管理",
+  "Edit roster": "名簿を編集",
+  "Save members": "メンバーを保存",
+  "Members updated.": "メンバーを更新しました。",
+  "Only an admin can add an existing account to a group.": "既存のアカウントをグループに追加できるのは管理者だけです。",
+  "Copy as Markdown": "Markdown としてコピー",
+  "Export CSV": "CSV を書き出す",
+  "Copied.": "コピーしました。"
 }

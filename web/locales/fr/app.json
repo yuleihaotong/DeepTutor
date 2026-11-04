@@ -7348,5 +7348,13 @@
   "Last {{days}} days": "{{days}} derniers jours",
   "Tokens": "Jetons",
   "Calls": "Appels",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, nous n'avons vu aucune activité cette semaine. Prends quelques minutes pour continuer."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, nous n'avons vu aucune activité cette semaine. Prends quelques minutes pour continuer.",
+  "Manage members": "Gérer les membres",
+  "Edit roster": "Modifier la liste",
+  "Save members": "Enregistrer les membres",
+  "Members updated.": "Membres mis à jour.",
+  "Only an admin can add an existing account to a group.": "Seul un administrateur peut ajouter un compte existant à un groupe.",
+  "Copy as Markdown": "Copier en Markdown",
+  "Export CSV": "Exporter en CSV",
+  "Copied.": "Copié."
 }

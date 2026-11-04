@@ -6461,5 +6461,13 @@
   "Last {{days}} days": "Últimos {{days}} dias",
   "Tokens": "Tokens usados",
   "Calls": "Chamadas",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, não vimos atividade sua esta semana — reserve alguns minutos para continuar."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, não vimos atividade sua esta semana — reserve alguns minutos para continuar.",
+  "Manage members": "Gerir membros",
+  "Edit roster": "Editar lista",
+  "Save members": "Guardar membros",
+  "Members updated.": "Membros atualizados.",
+  "Only an admin can add an existing account to a group.": "Apenas um administrador pode adicionar uma conta existente a um grupo.",
+  "Copy as Markdown": "Copiar como Markdown",
+  "Export CSV": "Exportar CSV",
+  "Copied.": "Copiado."
 }

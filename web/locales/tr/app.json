@@ -6443,5 +6443,13 @@
   "Last {{days}} days": "Son {{days}} gün",
   "Tokens": "Jeton",
   "Calls": "Çağrı",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, bu hafta senden etkinlik görmedik. Devam etmek için birkaç dakika ayırmanızı rica ederiz."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}, bu hafta senden etkinlik görmedik. Devam etmek için birkaç dakika ayırmanızı rica ederiz.",
+  "Manage members": "Üyeleri yönet",
+  "Edit roster": "Listeyi düzenle",
+  "Save members": "Üyeleri kaydet",
+  "Members updated.": "Üyeler güncellendi.",
+  "Only an admin can add an existing account to a group.": "Mevcut bir hesabı bir gruba yalnızca yönetici ekleyebilir.",
+  "Copy as Markdown": "Markdown olarak kopyala",
+  "Export CSV": "CSV olarak dışa aktar",
+  "Copied.": "Kopyalandı."
 }

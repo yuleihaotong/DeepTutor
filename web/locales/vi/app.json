@@ -6443,5 +6443,13 @@
   "Last {{days}} days": "{{days}} ngày gần đây",
   "Tokens": "Token",
   "Calls": "Lượt gọi",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}} ơi, tuần này chưa thấy bạn hoạt động — dành vài phút để tiếp tục nhé."
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}} ơi, tuần này chưa thấy bạn hoạt động — dành vài phút để tiếp tục nhé.",
+  "Manage members": "Quản lý thành viên",
+  "Edit roster": "Sửa danh sách",
+  "Save members": "Lưu thành viên",
+  "Members updated.": "Đã cập nhật thành viên.",
+  "Only an admin can add an existing account to a group.": "Chỉ quản trị viên mới có thể thêm tài khoản có sẵn vào nhóm.",
+  "Copy as Markdown": "Sao chép dạng Markdown",
+  "Export CSV": "Xuất CSV",
+  "Copied.": "Đã sao chép."
 }

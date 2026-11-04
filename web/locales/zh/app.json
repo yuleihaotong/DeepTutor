@@ -6443,5 +6443,13 @@
   "Last {{days}} days": "最近 {{days}} 天",
   "Tokens": "Token 数",
   "Calls": "调用次数",
-  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}，本周还没看到你的学习记录，抽几分钟继续一下吧。"
+  "{{name}}, we have not seen activity from you this week — please take a few minutes to continue.": "{{name}}，本周还没看到你的学习记录，抽几分钟继续一下吧。",
+  "Manage members": "管理成员",
+  "Edit roster": "编辑名单",
+  "Save members": "保存成员",
+  "Members updated.": "成员已更新。",
+  "Only an admin can add an existing account to a group.": "只有管理员能把已有账号加进小组。",
+  "Copy as Markdown": "复制为 Markdown",
+  "Export CSV": "导出 CSV",
+  "Copied.": "已复制。"
 }

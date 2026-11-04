@@ -1158,30 +1158,39 @@ async def group_report(group_id: str, current: object = Depends(require_auth)) -
     group, is_admin = _require_group_access(current, group_id)
     users = _users_by_id()
     reminders = last_reminders(group_id)
-    entries: list[dict[str, Any]] = []
-    for user_id in [group["lead_user_id"], *group["member_user_ids"]]:
-        account = users.get(user_id)
-        if account is None:
-            continue
+    member_ids = [
+        user_id
+        for user_id in [group["lead_user_id"], *group["member_user_ids"]]
+        if user_id in users
+    ]
+    # Each member costs a scope switch plus a learning-store read. Serially that
+    # is invisible for four people and a 40-way stall for forty, so the reads run
+    # concurrently — but capped: SQLite is happy with a few readers, not hundreds.
+    limiter = asyncio.Semaphore(8)
+
+    async def describe(user_id: str) -> dict[str, Any]:
+        account = users[user_id]
+        async with limiter:
+            learning = await asyncio.to_thread(member_learning, user_id)
         grant = load_grant(user_id)
-        entries.append(
-            {
-                "user_id": user_id,
-                "username": str(account.get("username") or ""),
-                "role": str(account.get("role") or "user"),
-                "preset": str(account.get("preset") or "standard"),
-                "disabled": bool(account.get("disabled", False)),
-                "must_change_password": bool(account.get("must_change_password", False)),
-                "last_active_at": _last_active_at(user_id),
-                "last_reminded_at": reminders.get(user_id),
-                "learning": member_learning(user_id),
-                "grant_summary": {
-                    "model_count": len(grant.get("models", {}).get("llm", []) or []),
-                    "knowledge_base_count": len(grant.get("knowledge_bases") or []),
-                    "skill_count": len(grant.get("skills") or []),
-                },
-            }
-        )
+        return {
+            "user_id": user_id,
+            "username": str(account.get("username") or ""),
+            "role": str(account.get("role") or "user"),
+            "preset": str(account.get("preset") or "standard"),
+            "disabled": bool(account.get("disabled", False)),
+            "must_change_password": bool(account.get("must_change_password", False)),
+            "last_active_at": _last_active_at(user_id),
+            "last_reminded_at": reminders.get(user_id),
+            "learning": learning,
+            "grant_summary": {
+                "model_count": len(grant.get("models", {}).get("llm", []) or []),
+                "knowledge_base_count": len(grant.get("knowledge_bases") or []),
+                "skill_count": len(grant.get("skills") or []),
+            },
+        }
+
+    entries = list(await asyncio.gather(*(describe(user_id) for user_id in member_ids)))
     _log_group_action(
         "group_report_view",
         group_id,
@@ -1537,22 +1546,26 @@ async def group_weekly_report(
     window = max(1, min(int(days or 7), 90))
     start_at = _time.time() - window * 86400
     users = _users_by_id()
-    rows: list[dict[str, Any]] = []
-    total_tokens = 0
-    for user_id in [group["lead_user_id"], *group["member_user_ids"]]:
-        account = users.get(user_id)
-        if account is None:
-            continue
-        usage = await member_usage(user_id, start_at)
-        total_tokens += int(usage["total_tokens"])
-        rows.append(
-            {
-                "user_id": user_id,
-                "username": str(account.get("username") or ""),
-                "total_tokens": int(usage["total_tokens"]),
-                "calls": int(usage["calls"]),
-            }
-        )
+    member_ids = [
+        user_id
+        for user_id in [group["lead_user_id"], *group["member_user_ids"]]
+        if user_id in users
+    ]
+    limiter = asyncio.Semaphore(8)
+
+    async def usage_row(user_id: str) -> dict[str, Any]:
+        account = users[user_id]
+        async with limiter:
+            usage = await member_usage(user_id, start_at)
+        return {
+            "user_id": user_id,
+            "username": str(account.get("username") or ""),
+            "total_tokens": int(usage["total_tokens"]),
+            "calls": int(usage["calls"]),
+        }
+
+    rows = list(await asyncio.gather(*(usage_row(user_id) for user_id in member_ids)))
+    total_tokens = sum(row["total_tokens"] for row in rows)
     _log_group_action("group_weekly_view", group_id, is_admin=is_admin, summary={"days": window})
     return {
         "group": _group_view(group, users),
