@@ -6451,5 +6451,17 @@
   "Only an admin can add an existing account to a group.": "既存のアカウントをグループに追加できるのは管理者だけです。",
   "Copy as Markdown": "Markdown としてコピー",
   "Export CSV": "CSV を書き出す",
-  "Copied.": "コピーしました。"
+  "Copied.": "コピーしました。",
+  "Teams": "チーム",
+  "Team": "チーム",
+  "Team members": "チームメンバー",
+  "Create team": "チームを作成",
+  "Delete team": "チームを削除",
+  "Team name": "チーム名",
+  "Team created.": "チームを作成しました。",
+  "Team deleted.": "チームを削除しました。",
+  "Delete this team? Members keep their accounts.": "このチームを削除しますか？アカウントは残ります。",
+  "Only an admin can add an existing account to a team.": "既存のアカウントをチームに追加できるのは管理者だけです。",
+  "Removing someone detaches them from the team. The account is kept.": "削除するとチームから外れますが、アカウントは残ります。",
+  "You do not lead any team.": "あなたが率いるチームはありません。"
 }

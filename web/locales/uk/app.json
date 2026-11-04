@@ -6473,5 +6473,17 @@
   "Only an admin can add an existing account to a group.": "Лише адміністратор може додати наявний обліковий запис до групи.",
   "Copy as Markdown": "Копіювати як Markdown",
   "Export CSV": "Експортувати CSV",
-  "Copied.": "Скопійовано."
+  "Copied.": "Скопійовано.",
+  "Teams": "Команди",
+  "Team": "Команда",
+  "Team members": "Учасники команди",
+  "Create team": "Створити команду",
+  "Delete team": "Видалити команду",
+  "Team name": "Назва команди",
+  "Team created.": "Команду створено.",
+  "Team deleted.": "Команду видалено.",
+  "Delete this team? Members keep their accounts.": "Видалити цю команду? Облікові записи збережуться.",
+  "Only an admin can add an existing account to a team.": "Лише адміністратор може додати наявний обліковий запис до команди.",
+  "Removing someone detaches them from the team. The account is kept.": "Видалення від'єднує людину від команди. Обліковий запис зберігається.",
+  "You do not lead any team.": "Ви не керуєте жодною командою."
 }

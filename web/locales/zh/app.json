@@ -6451,5 +6451,17 @@
   "Only an admin can add an existing account to a group.": "只有管理员能把已有账号加进小组。",
   "Copy as Markdown": "复制为 Markdown",
   "Export CSV": "导出 CSV",
-  "Copied.": "已复制。"
+  "Copied.": "已复制。",
+  "Teams": "小组",
+  "Team": "小组",
+  "Team members": "小组成员",
+  "Create team": "新建小组",
+  "Delete team": "删除小组",
+  "Team name": "小组名称",
+  "Team created.": "小组已创建。",
+  "Team deleted.": "小组已删除。",
+  "Delete this team? Members keep their accounts.": "删除这个小组？账号会保留。",
+  "Only an admin can add an existing account to a team.": "只有管理员能把已有账号加进小组。",
+  "Removing someone detaches them from the team. The account is kept.": "移出只会把这个人从小组中移除，账号本身保留。",
+  "You do not lead any team.": "你还没有负责的小组。"
 }

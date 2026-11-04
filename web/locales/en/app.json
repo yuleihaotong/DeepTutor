@@ -6451,5 +6451,17 @@
   "Only an admin can add an existing account to a group.": "Only an admin can add an existing account to a group.",
   "Copy as Markdown": "Copy as Markdown",
   "Export CSV": "Export CSV",
-  "Copied.": "Copied."
+  "Copied.": "Copied.",
+  "Teams": "Teams",
+  "Team": "Team",
+  "Team members": "Team members",
+  "Create team": "Create team",
+  "Delete team": "Delete team",
+  "Team name": "Team name",
+  "Team created.": "Team created.",
+  "Team deleted.": "Team deleted.",
+  "Delete this team? Members keep their accounts.": "Delete this team? Members keep their accounts.",
+  "Only an admin can add an existing account to a team.": "Only an admin can add an existing account to a team.",
+  "Removing someone detaches them from the team. The account is kept.": "Removing someone detaches them from the team. The account is kept.",
+  "You do not lead any team.": "You do not lead any team."
 }

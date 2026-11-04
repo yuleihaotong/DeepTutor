@@ -402,7 +402,7 @@ export default function GroupsPage() {
       setGroups(list);
       setActiveId(created.id);
       await loadGroup(created.id);
-      setNotice(t("Group created."));
+      setNotice(t("Team created."));
     } catch (err) {
       setError(messageOf(err));
     } finally {
@@ -428,7 +428,7 @@ export default function GroupsPage() {
         setReport([]);
         setWeekly(null);
       }
-      setNotice(t("Group deleted."));
+      setNotice(t("Team deleted."));
     } catch (err) {
       setError(messageOf(err));
     } finally {
@@ -450,13 +450,13 @@ export default function GroupsPage() {
     <div className={cardClass}>
       <h2 className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
         <Users size={16} />
-        {t("Create group")}
+        {t("Create team")}
       </h2>
       <div className="mt-3 grid gap-2 sm:grid-cols-3">
         <input
           value={draftName}
           onChange={(event) => setDraftName(event.target.value)}
-          placeholder={t("Group name")}
+          placeholder={t("Team name")}
           className={inputClass}
         />
         <select
@@ -512,7 +512,7 @@ export default function GroupsPage() {
           {confirmDelete ? (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs text-[var(--destructive)]">
-                {t("Delete this group? Members keep their accounts.")}
+                {t("Delete this team? Members keep their accounts.")}
               </span>
               <button
                 type="button"
@@ -529,7 +529,7 @@ export default function GroupsPage() {
           ) : (
             <button type="button" className={buttonClass} onClick={() => setConfirmDelete(true)}>
               <Trash2 size={14} />
-              {t("Delete group")}
+              {t("Delete team")}
             </button>
           )}
         </div>
@@ -542,9 +542,9 @@ export default function GroupsPage() {
       <div className="min-h-screen bg-[var(--background)] px-4 py-10">
         <div className="mx-auto max-w-4xl space-y-4">
           <div className={cardClass}>
-            <h1 className="text-lg font-semibold text-[var(--foreground)]">{t("Groups")}</h1>
+            <h1 className="text-lg font-semibold text-[var(--foreground)]">{t("Teams")}</h1>
             <p className="mt-3 text-sm text-[var(--muted-foreground)]">
-              {t("You do not lead any group.")}
+              {t("You do not lead any team.")}
             </p>
           </div>
         </div>
@@ -558,14 +558,14 @@ export default function GroupsPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <Users size={18} className="text-[var(--primary)]" />
-            <h1 className="text-lg font-semibold text-[var(--foreground)]">{t("Groups")}</h1>
+            <h1 className="text-lg font-semibold text-[var(--foreground)]">{t("Teams")}</h1>
           </div>
           {groups.length > 1 && (
             <select
               value={activeId}
               onChange={(event) => void selectGroup(event.target.value)}
               className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-sm text-[var(--foreground)]"
-              aria-label={t("Group")}
+              aria-label={t("Team")}
             >
               {groups.map((item) => (
                 <option key={item.id} value={item.id}>
@@ -594,7 +594,7 @@ export default function GroupsPage() {
             <div className={cardClass}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-sm font-medium text-[var(--foreground)]">
-                  {group.name} · {t("Members")}
+                  {group.name} · {t("Team members")}
                 </h2>
                 <div className="flex gap-1.5">
                   <button
@@ -718,7 +718,7 @@ export default function GroupsPage() {
                 </table>
               </div>
               <p className="mt-3 text-xs text-[var(--muted-foreground)]">
-                {t("Removing someone detaches them from the group. The account is kept.")}
+                {t("Removing someone detaches them from the team. The account is kept.")}
               </p>
             </div>
 
@@ -764,7 +764,7 @@ export default function GroupsPage() {
                 </div>
                 {memberDraft === null ? (
                   <p className="mt-3 text-xs text-[var(--muted-foreground)]">
-                    {t("Only an admin can add an existing account to a group.")}
+                    {t("Only an admin can add an existing account to a team.")}
                   </p>
                 ) : (
                   <div className="mt-3 flex flex-wrap gap-3">

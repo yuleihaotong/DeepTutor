@@ -6469,5 +6469,17 @@
   "Only an admin can add an existing account to a group.": "Apenas um administrador pode adicionar uma conta existente a um grupo.",
   "Copy as Markdown": "Copiar como Markdown",
   "Export CSV": "Exportar CSV",
-  "Copied.": "Copiado."
+  "Copied.": "Copiado.",
+  "Teams": "Equipas",
+  "Team": "Equipa",
+  "Team members": "Membros da equipa",
+  "Create team": "Criar equipa",
+  "Delete team": "Eliminar equipa",
+  "Team name": "Nome da equipa",
+  "Team created.": "Equipa criada.",
+  "Team deleted.": "Equipa eliminada.",
+  "Delete this team? Members keep their accounts.": "Eliminar esta equipa? As contas são mantidas.",
+  "Only an admin can add an existing account to a team.": "Apenas um administrador pode adicionar uma conta existente a uma equipa.",
+  "Removing someone detaches them from the team. The account is kept.": "Remover alguém desvincula-o da equipa. A conta é mantida.",
+  "You do not lead any team.": "Não lidera nenhuma equipa."
 }

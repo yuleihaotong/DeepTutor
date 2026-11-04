@@ -6451,5 +6451,17 @@
   "Only an admin can add an existing account to a group.": "Mevcut bir hesabı bir gruba yalnızca yönetici ekleyebilir.",
   "Copy as Markdown": "Markdown olarak kopyala",
   "Export CSV": "CSV olarak dışa aktar",
-  "Copied.": "Kopyalandı."
+  "Copied.": "Kopyalandı.",
+  "Teams": "Takımlar",
+  "Team": "Takım",
+  "Team members": "Takım üyeleri",
+  "Create team": "Takım oluştur",
+  "Delete team": "Takımı sil",
+  "Team name": "Takım adı",
+  "Team created.": "Takım oluşturuldu.",
+  "Team deleted.": "Takım silindi.",
+  "Delete this team? Members keep their accounts.": "Bu takım silinsin mi? Hesaplar korunur.",
+  "Only an admin can add an existing account to a team.": "Mevcut bir hesabı bir takıma yalnızca yönetici ekleyebilir.",
+  "Removing someone detaches them from the team. The account is kept.": "Birini kaldırmak onu takımdan ayırır. Hesap korunur.",
+  "You do not lead any team.": "Yönettiğiniz bir takım yok."
 }

@@ -126,6 +126,8 @@ describe("groups screen", () => {
 
     expect((await screen.findAllByText("member1")).length).toBeGreaterThan(0);
     expect(screen.getByText("3 paths · 60% mastery")).toBeInTheDocument();
+    // The screen calls itself Teams: "群组" belongs to the Partner Groups feature.
+    expect(screen.getByText("Teams")).toBeInTheDocument();
   });
 
   it("shows an unreadable scope as a dash instead of a zero", async () => {
@@ -171,7 +173,7 @@ describe("groups screen", () => {
 
     await screen.findAllByText("member1");
     expect(screen.queryByText("Manage members")).not.toBeInTheDocument();
-    expect(screen.queryByText("Create group")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create team")).not.toBeInTheDocument();
     // The lead still sees the roster and the weekly usage they are entitled to.
     expect(screen.getByText(/Weekly usage/)).toBeInTheDocument();
   });

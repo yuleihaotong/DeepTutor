@@ -6451,5 +6451,17 @@
   "Only an admin can add an existing account to a group.": "Chỉ quản trị viên mới có thể thêm tài khoản có sẵn vào nhóm.",
   "Copy as Markdown": "Sao chép dạng Markdown",
   "Export CSV": "Xuất CSV",
-  "Copied.": "Đã sao chép."
+  "Copied.": "Đã sao chép.",
+  "Teams": "Nhóm",
+  "Team": "Nhóm",
+  "Team members": "Thành viên nhóm",
+  "Create team": "Tạo nhóm",
+  "Delete team": "Xoá nhóm",
+  "Team name": "Tên nhóm",
+  "Team created.": "Đã tạo nhóm.",
+  "Team deleted.": "Đã xoá nhóm.",
+  "Delete this team? Members keep their accounts.": "Xoá nhóm này? Tài khoản vẫn được giữ.",
+  "Only an admin can add an existing account to a team.": "Chỉ quản trị viên mới có thể thêm tài khoản có sẵn vào nhóm.",
+  "Removing someone detaches them from the team. The account is kept.": "Xoá ai đó sẽ gỡ họ khỏi nhóm. Tài khoản vẫn được giữ.",
+  "You do not lead any team.": "Bạn chưa phụ trách nhóm nào."
 }
